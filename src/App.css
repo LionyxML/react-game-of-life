@@ -67,12 +67,18 @@
   width: 15px;
   height: 15px;
   border: 1px solid black;
+  cursor: crosshair;
 }
 
 .dead {
   background-color: white;
+  transition: background-color 0.4s ease-out;
 }
 
 .alive {
-  background-color: cyan;
+  background-color: rgba(0, 200, 200, 1);
+}
+
+.generation {
+  color: #888;
 }
