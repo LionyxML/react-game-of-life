@@ -13,7 +13,7 @@ type LifeGridCell = {
   isAlive: boolean;
 };
 
-const generateLifeCell = (line, col, isAlive) => ({
+const generateLifeCell = (line: number, col: number, isAlive: boolean) => ({
   line,
   col,
   key: `cell-${line}-${col}`,
@@ -30,7 +30,7 @@ const generateLifeGrid = (lines = DEFAULT_LINES, columns = DEFAULT_COLS): LifeGr
 const countCellNeighbors = (
   line: number,
   col: number,
-  lifeGrid: lifeGrid,
+  lifeGrid: LifeGrid,
   isBorderLimited: boolean,
 ): number => {
   const lastLine = lifeGrid.length - 1;
@@ -81,7 +81,7 @@ const generateFutureAliviness = (isAlive: boolean, neighbors: number): boolean =
   return false;
 };
 
-const updateLifeGrid = (lifeGrid: lifeGridType, isBorderLimited: boolean) =>
+const updateLifeGrid = (lifeGrid: LifeGrid, isBorderLimited: boolean) =>
   lifeGrid.map((line, lineIndex) =>
     line.map((cell, colIndex) =>
       generateLifeCell(
@@ -104,7 +104,7 @@ function App() {
     setGrid((currentGrid) => [...over(lensPath([line, col, "isAlive"]), not, currentGrid)]);
   };
 
-  const handleNextGeneration = (grid: lifeGridType, isBorderLimited: boolean) => {
+  const handleNextGeneration = (grid: LifeGrid, isBorderLimited: boolean) => {
     setGrid(updateLifeGrid(grid, isBorderLimited));
     setGeneration((generation) => generation + 1);
   };
