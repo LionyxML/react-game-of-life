@@ -32,24 +32,46 @@ const countCellNeighbors = (
   col: number,
   lifeGrid: lifeGrid,
   isBorderLimited: boolean,
-): number =>
-  [
-    isBorderLimited && line !== 0 ? pathOr(false, [line - 1, col - 1, "isAlive"], lifeGrid) : false,
+): number => {
+  const lastLine = lifeGrid.length - 1;
+  const lastCol = lifeGrid[0].length - 1;
 
-    isBorderLimited && line !== 0 ? pathOr(false, [line - 1, col, "isAlive"], lifeGrid) : false,
-
-    isBorderLimited && line !== 0 ? pathOr(false, [line - 1, col + 1, "isAlive"], lifeGrid) : false,
-
-    isBorderLimited && col !== 0 ? pathOr(false, [line, col - 1, "isAlive"], lifeGrid) : false,
-
-    pathOr(false, [line, col + 1, "isAlive"], lifeGrid),
-
-    isBorderLimited && col !== 0 ? pathOr(false, [line + 1, col - 1, "isAlive"], lifeGrid) : false,
-
-    isBorderLimited ? pathOr(false, [line + 1, col, "isAlive"], lifeGrid) : false,
-
-    isBorderLimited ? pathOr(false, [line + 1, col + 1, "isAlive"], lifeGrid) : false,
-  ].filter((x) => x).length;
+  return (
+    isBorderLimited
+      ? [
+          line !== 0 ? pathOr(false, [line - 1, col - 1, "isAlive"], lifeGrid) : false,
+          line !== 0 ? pathOr(false, [line - 1, col, "isAlive"], lifeGrid) : false,
+          line !== 0 ? pathOr(false, [line - 1, col + 1, "isAlive"], lifeGrid) : false,
+          col !== 0 ? pathOr(false, [line, col - 1, "isAlive"], lifeGrid) : false,
+          pathOr(false, [line, col + 1, "isAlive"], lifeGrid),
+          col !== 0 ? pathOr(false, [line + 1, col - 1, "isAlive"], lifeGrid) : false,
+          pathOr(false, [line + 1, col, "isAlive"], lifeGrid),
+          pathOr(false, [line + 1, col + 1, "isAlive"], lifeGrid),
+        ]
+      : [
+          pathOr(false, [line > 0 ? line - 1 : lastLine, col - 1, "isAlive"], lifeGrid),
+          pathOr(false, [line > 0 ? line - 1 : lastLine, col, "isAlive"], lifeGrid),
+          pathOr(
+            false,
+            [line > 0 ? line - 1 : lastLine, col < lastCol ? col + 1 : 0, "isAlive"],
+            lifeGrid,
+          ),
+          pathOr(false, [line, col > 0 ? col - 1 : lastCol, "isAlive"], lifeGrid),
+          pathOr(false, [line, col < lastCol ? col + 1 : 0, "isAlive"], lifeGrid),
+          pathOr(
+            false,
+            [line < lastLine ? line + 1 : 0, col > 0 ? col - 1 : lastCol, "isAlive"],
+            lifeGrid,
+          ),
+          pathOr(false, [line < lastLine ? line + 1 : 0, col, "isAlive"], lifeGrid),
+          pathOr(
+            false,
+            [line < lastLine ? line + 1 : 0, col < lastCol ? col + 1 : 0, "isAlive"],
+            lifeGrid,
+          ),
+        ]
+  ).filter((x) => x).length;
+};
 
 const generateFutureAliviness = (isAlive: boolean, neighbors: number): boolean => {
   if (!isAlive && neighbors === 3) return true;
@@ -74,7 +96,7 @@ const updateLifeGrid = (lifeGrid: lifeGridType, isBorderLimited: boolean) =>
   );
 
 function App() {
-  const [isBorderLimited, setBorderLimited] = useState(true);
+  const [isBorderLimited, setBorderLimited] = useState(false);
   const [generation, setGeneration] = useState(0);
   const [grid, setGrid] = useState(generateLifeGrid());
 
@@ -136,9 +158,8 @@ function App() {
                 type="checkbox"
                 checked={isBorderLimited}
                 onChange={() => setBorderLimited((currentState) => !currentState)}
-                disabled={true} // TODO: implement infinit border feature
               />
-              Limit border
+              limit on border
             </label>
           </div>
         </div>
