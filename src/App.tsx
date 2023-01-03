@@ -6,12 +6,12 @@ import "./App.css";
 const DEFAULT_LINES = 20;
 const DEFAULT_COLS = 40;
 
-type LifeGridCell = {
+interface ILifeGridCell {
   line: number;
   col: number;
   key: string;
   isAlive: boolean;
-};
+}
 
 const generateLifeCell = (line: number, col: number, isAlive: boolean) => ({
   line,
@@ -20,7 +20,7 @@ const generateLifeCell = (line: number, col: number, isAlive: boolean) => ({
   isAlive,
 });
 
-type LifeGrid = Array<Array<LifeGridCell>>;
+type LifeGrid = Array<Array<ILifeGridCell>>;
 
 const generateLifeGrid = (lines = DEFAULT_LINES, columns = DEFAULT_COLS): LifeGrid =>
   Array.from(Array(lines).fill(null), () => Array(columns).fill(null)).map((line, lineIndex) =>
