@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { lensPath, over, not, pathOr } from "ramda";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 
 const DEFAULT_LINES = 20;
 const DEFAULT_COLS = 40;
+const DEFAULT_TICKER_MILISSECONDS = 100;
 
 interface ILifeGridCell {
   line: number;
@@ -99,20 +100,42 @@ function App() {
   const [isBorderLimited, setBorderLimited] = useState(false);
   const [generation, setGeneration] = useState(0);
   const [grid, setGrid] = useState(generateLifeGrid());
+  const [isAutoplay, setIsAutoplay] = useState(false);
+  const ticker = useRef(0);
 
-  const changeCurrentGrid = (line: number, col: number) => {
+  const handleUpdateCurrentGrid = (line: number, col: number) => {
     setGrid((currentGrid) => [...over(lensPath([line, col, "isAlive"]), not, currentGrid)]);
   };
 
-  const handleNextGeneration = (grid: LifeGrid, isBorderLimited: boolean) => {
-    setGrid(updateLifeGrid(grid, isBorderLimited));
-    setGeneration((generation) => generation + 1);
+  const handleNextGeneration = () => {
+    setGeneration((generation) => (generation += 1));
   };
 
   const handleReset = () => {
     setGeneration(0);
     setGrid(generateLifeGrid());
+    setIsAutoplay(false);
   };
+
+  const handleLimitBorder = () => setBorderLimited((currentState) => !currentState);
+
+  const handleAutoGenerate = () => {
+    setIsAutoplay((autoplay) => !autoplay);
+  };
+
+  useEffect(() => {
+    if (isAutoplay) {
+      ticker.current = setInterval(() => {
+        setGeneration((generation) => generation + 1);
+      }, DEFAULT_TICKER_MILISSECONDS);
+    }
+
+    return () => clearInterval(ticker.current);
+  }, [isAutoplay]);
+
+  useEffect(() => {
+    setGrid(updateLifeGrid(grid, isBorderLimited));
+  }, [isAutoplay, generation]);
 
   return (
     <div className="App">
@@ -131,7 +154,7 @@ function App() {
                 key={`grid-cell-${j}`}
                 className={`gridCell ${cell.isAlive ? "alive" : "dead"}`}
                 onClick={() => {
-                  changeCurrentGrid(cell.line, cell.col);
+                  handleUpdateCurrentGrid(cell.line, cell.col);
                 }}
               >
                 {" "}
@@ -148,17 +171,15 @@ function App() {
             Reset
           </button>
 
-          <button onClick={() => handleNextGeneration(grid, isBorderLimited)}>
+          <button onClick={handleNextGeneration} disabled={isAutoplay}>
             Next Generation
           </button>
 
+          <button onClick={handleAutoGenerate}>{isAutoplay ? "Stop" : "Auto Generate"}</button>
+
           <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={isBorderLimited}
-                onChange={() => setBorderLimited((currentState) => !currentState)}
-              />
+            <label className="limit">
+              <input type="checkbox" checked={isBorderLimited} onChange={handleLimitBorder} />
               limit on border
             </label>
           </div>

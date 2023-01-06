@@ -80,5 +80,9 @@
 }
 
 .generation {
-  color: #888;
+  color: black;
+}
+
+.limit {
+  color: black;
 }
