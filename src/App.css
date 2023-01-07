@@ -31,12 +31,6 @@
   }
 }
 
-.card {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
 .line {
   padding: 1rem;
   display: flex;
@@ -71,7 +65,7 @@
 }
 
 .dead {
-  background-color: white;
+  background-color: inherit;
   transition: background-color 0.4s ease-out;
 }
 
@@ -80,9 +74,30 @@
 }
 
 .generation {
-  color: black;
+  color: inherit;
+  font-size: larger;
+  font-weight: 500;
+  height: 25px;
 }
 
 .limit {
-  color: black;
+  margin-top: 25px;
+  color: inherit;
+}
+
+.auto-stop {
+  color: inherit;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  width: 220px;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
 }

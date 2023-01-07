@@ -82,7 +82,7 @@ const generateFutureAliviness = (isAlive: boolean, neighbors: number): boolean =
   return false;
 };
 
-const updateLifeGrid = (lifeGrid: LifeGrid, isBorderLimited: boolean) =>
+const updateLifeGrid = (lifeGrid: LifeGrid, isBorderLimited: boolean): LifeGrid =>
   lifeGrid.map((line, lineIndex) =>
     line.map((cell, colIndex) =>
       generateLifeCell(
@@ -96,11 +96,19 @@ const updateLifeGrid = (lifeGrid: LifeGrid, isBorderLimited: boolean) =>
     ),
   );
 
+const countLiveCells = (lifeGrid: LifeGrid): number =>
+  lifeGrid
+    .map((line) => line.map((cell) => cell?.isAlive))
+    .flat()
+    .filter(Boolean).length;
+
 function App() {
   const [isBorderLimited, setBorderLimited] = useState(false);
+  const [isStopWhenBlank, setIsStopWhenBlank] = useState(false);
+  const [isAutoplay, setIsAutoplay] = useState(false);
   const [generation, setGeneration] = useState(0);
   const [grid, setGrid] = useState(generateLifeGrid());
-  const [isAutoplay, setIsAutoplay] = useState(false);
+
   const ticker = useRef(0);
 
   const handleUpdateCurrentGrid = (line: number, col: number) => {
@@ -119,6 +127,8 @@ function App() {
 
   const handleLimitBorder = () => setBorderLimited((currentState) => !currentState);
 
+  const handleStopWhenBlank = () => setIsStopWhenBlank((currentState) => !currentState);
+
   const handleAutoGenerate = () => {
     setIsAutoplay((autoplay) => !autoplay);
   };
@@ -134,7 +144,12 @@ function App() {
   }, [isAutoplay]);
 
   useEffect(() => {
-    setGrid(updateLifeGrid(grid, isBorderLimited));
+    const newGrid = updateLifeGrid(grid, isBorderLimited);
+    const shouldStop = isStopWhenBlank && countLiveCells(newGrid) === 0;
+
+    if (shouldStop) setIsAutoplay(false);
+
+    setGrid(newGrid);
   }, [isAutoplay, generation]);
 
   return (
@@ -142,53 +157,68 @@ function App() {
       <h1>
         The <img src={reactLogo} className="logo react" alt="React logo" /> Game of Life
       </h1>
-      <p>
-        Click on a cell (or many cells) to populate it and use [Next Generation] or other control
-        button below.
-      </p>
-      <div className="grid">
-        {grid.map((line, i) => (
-          <div key={`grid-line-${i}`} className="gridLine">
-            {line.map((cell, j) => (
-              <div
-                key={`grid-cell-${j}`}
-                className={`gridCell ${cell.isAlive ? "alive" : "dead"}`}
-                onClick={() => {
-                  handleUpdateCurrentGrid(cell.line, cell.col);
-                }}
-              >
-                {" "}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-      <div className="card">
-        <div className="line">
-          <p className="generation">Current Generation: {String(generation).padStart(3, "0")}</p>
+      <div className="line"></div>
+      <div className="line">
+        <div className="grid">
+          {grid.map((line, i) => (
+            <div key={`grid-line-${i}`} className="gridLine">
+              {line.map((cell, j) => (
+                <div
+                  key={`grid-cell-${j}`}
+                  className={`gridCell ${cell.isAlive ? "alive" : "dead"}`}
+                  onClick={() => {
+                    handleUpdateCurrentGrid(cell.line, cell.col);
+                  }}
+                >
+                  {" "}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
 
-          <button onClick={handleReset} disabled={generation === 0}>
-            Reset
+        <div className="controls">
+          <p className="generation">Generation: {String(generation).padStart(3, "0")}</p>
+
+          <button className="menu-item" onClick={handleAutoGenerate}>
+            {isAutoplay ? (
+              <>
+                <span>⏸︎</span> <span>Stop Generation</span>
+              </>
+            ) : (
+              <>
+                <span>⏵︎</span> <span>Start Auto Generation</span>
+              </>
+            )}
           </button>
 
-          <button onClick={handleNextGeneration} disabled={isAutoplay}>
-            Next Generation
+          <button className="menu-item" onClick={handleNextGeneration} disabled={isAutoplay}>
+            <span>⏯︎</span> <span>Next Generation</span>
           </button>
 
-          <button onClick={handleAutoGenerate}>{isAutoplay ? "Stop" : "Auto Generate"}</button>
+          <button className="menu-item" onClick={handleReset} disabled={generation === 0}>
+            <span>⏹︎</span> <span>Reset</span>
+          </button>
 
-          <div>
+          <div className="menu-item">
             <label className="limit">
               <input type="checkbox" checked={isBorderLimited} onChange={handleLimitBorder} />
               limit on border
             </label>
           </div>
+
+          <div className="menu-item">
+            <label className="auto-stop">
+              <input type="checkbox" checked={isStopWhenBlank} onChange={handleStopWhenBlank} />
+              auto-stop when lifeless
+            </label>
+          </div>
+
+          <p className="footer">
+            by RMJ (<a href="https://github.com/LionyxML">github</a>)
+          </p>
         </div>
       </div>
-
-      <p className="footer">
-        by RMJ (<a href="https://github.com/LionyxML">github</a>)
-      </p>
     </div>
   );
 }
