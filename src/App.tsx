@@ -6,6 +6,7 @@ import "./App.css";
 const DEFAULT_LINES = 20;
 const DEFAULT_COLS = 40;
 const DEFAULT_TICKER_MILISSECONDS = 100;
+const DEFAULT_RANDOM_PROBABILITY_OF_LIFE = 15 / 100;
 
 interface ILifeGridCell {
   line: number;
@@ -23,9 +24,25 @@ const generateLifeCell = (line: number, col: number, isAlive: boolean) => ({
 
 type LifeGrid = Array<Array<ILifeGridCell>>;
 
-const generateLifeGrid = (lines = DEFAULT_LINES, columns = DEFAULT_COLS): LifeGrid =>
+interface ILifeGridProps {
+  lines?: number;
+  columns?: number;
+  randomize?: boolean;
+}
+
+const generateLifeGrid = ({
+  lines = DEFAULT_LINES,
+  columns = DEFAULT_COLS,
+  randomize = false,
+}: ILifeGridProps): LifeGrid =>
   Array.from(Array(lines).fill(null), () => Array(columns).fill(null)).map((line, lineIndex) =>
-    line.map((_col, colIndex) => generateLifeCell(lineIndex, colIndex, false)),
+    line.map((_col, colIndex) =>
+      generateLifeCell(
+        lineIndex,
+        colIndex,
+        randomize ? Math.random() < DEFAULT_RANDOM_PROBABILITY_OF_LIFE : false,
+      ),
+    ),
   );
 
 const countCellNeighbors = (
@@ -104,10 +121,10 @@ const countLiveCells = (lifeGrid: LifeGrid): number =>
 
 function App() {
   const [isBorderLimited, setBorderLimited] = useState(false);
-  const [isStopWhenBlank, setIsStopWhenBlank] = useState(false);
+  const [isStopWhenBlank, setIsStopWhenBlank] = useState(true);
   const [isAutoplay, setIsAutoplay] = useState(false);
   const [generation, setGeneration] = useState(0);
-  const [grid, setGrid] = useState(generateLifeGrid());
+  const [grid, setGrid] = useState(generateLifeGrid({}));
   const ticker = useRef(0);
 
   const handleUpdateCurrentGrid = (line: number, col: number) => {
@@ -120,8 +137,12 @@ function App() {
 
   const handleReset = () => {
     setGeneration(0);
-    setGrid(generateLifeGrid());
+    setGrid(generateLifeGrid({}));
     setIsAutoplay(false);
+  };
+
+  const handleRandom = () => {
+    setGrid(generateLifeGrid({ randomize: true }));
   };
 
   const handleLimitBorder = () => setBorderLimited((currentState) => !currentState);
@@ -197,6 +218,10 @@ function App() {
 
           <button className="menu-item" onClick={handleReset} disabled={generation === 0}>
             <span>⏹︎</span> <span>Reset</span>
+          </button>
+
+          <button className="menu-item" onClick={handleRandom} disabled={generation !== 0}>
+            <span>⇆</span> <span>Randomize</span>
           </button>
 
           <div className="menu-item">
