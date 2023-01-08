@@ -60,8 +60,14 @@
   display: flex;
   width: 15px;
   height: 15px;
-  border: 1px solid black;
+  border: 1px solid #555;
   cursor: crosshair;
+}
+
+@media (prefers-color-scheme: light) {
+  .gridCell {
+    border: 1px solid black;
+  }
 }
 
 .dead {

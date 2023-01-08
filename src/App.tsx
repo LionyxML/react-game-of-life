@@ -108,7 +108,6 @@ function App() {
   const [isAutoplay, setIsAutoplay] = useState(false);
   const [generation, setGeneration] = useState(0);
   const [grid, setGrid] = useState(generateLifeGrid());
-
   const ticker = useRef(0);
 
   const handleUpdateCurrentGrid = (line: number, col: number) => {
