@@ -203,11 +203,11 @@ function App() {
           <button className="menu-item" onClick={handleAutoGenerate}>
             {isAutoplay ? (
               <>
-                <span>⏸︎</span> <span>Stop Generation</span>
+                <span>⏸︎</span> <span>Pause Generation</span>
               </>
             ) : (
               <>
-                <span>⏵︎</span> <span>Start Auto Generation</span>
+                <span>⏵︎</span> <span>Start Generation</span>
               </>
             )}
           </button>

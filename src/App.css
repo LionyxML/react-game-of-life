@@ -89,10 +89,14 @@
 .limit {
   margin-top: 25px;
   color: inherit;
+  display: flex;
+  gap: 5px;
 }
 
 .auto-stop {
   color: inherit;
+  display: flex;
+  gap: 5px;
 }
 
 .controls {
@@ -100,7 +104,7 @@
   flex-direction: column;
   justify-content: flex-start;
   gap: 0.5rem;
-  width: 220px;
+  width: 190px;
 }
 
 .menu-item {
