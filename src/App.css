@@ -66,7 +66,7 @@
 
 @media (prefers-color-scheme: light) {
   .gridCell {
-    border: 1px solid black;
+    border: 1px solid #ddd;
   }
 }
 
@@ -79,11 +79,36 @@
   background-color: rgba(0, 200, 200, 1);
 }
 
+.score {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.score--line {
+  display: flex;
+  flex-direction: column;
+}
+
 .generation {
   color: inherit;
-  font-size: larger;
+  font-size: large;
   font-weight: 500;
-  height: 25px;
+  margin: 0;
+  font-family: monospace;
+  text-align: right;
+}
+
+.living-cells {
+  color: inherit;
+  font-size: large;
+  font-weight: 500;
+  margin: 0;
+  padding-bottom: 20px;
+  font-family: monospace;
+  text-align: right;
 }
 
 .limit {
@@ -104,7 +129,7 @@
   flex-direction: column;
   justify-content: flex-start;
   gap: 0.5rem;
-  width: 190px;
+  width: 230px;
 }
 
 .menu-item {

@@ -125,24 +125,32 @@ function App() {
   const [isAutoplay, setIsAutoplay] = useState(false);
   const [generation, setGeneration] = useState(0);
   const [grid, setGrid] = useState(generateLifeGrid({}));
+  const [livingCellsCount, setLivingCellsCount] = useState(0);
   const ticker = useRef(0);
 
-  const handleUpdateCurrentGrid = (line: number, col: number) => {
-    setGrid((currentGrid) => [...over(lensPath([line, col, "isAlive"]), not, currentGrid)]);
-  };
+  const handleUpdateCurrentCell = (line: number, col: number) =>
+    setGrid((currentGrid) => {
+      const newGrid = [...over(lensPath([line, col, "isAlive"]), not, currentGrid)];
 
-  const handleNextGeneration = () => {
-    setGeneration((generation) => (generation += 1));
-  };
+      setLivingCellsCount(countLiveCells(newGrid));
+
+      return newGrid;
+    });
+
+  const handleNextGeneration = () => setGeneration((generation) => (generation += 1));
 
   const handleReset = () => {
+    setLivingCellsCount(0);
     setGeneration(0);
     setGrid(generateLifeGrid({}));
     setIsAutoplay(false);
   };
 
   const handleRandom = () => {
-    setGrid(generateLifeGrid({ randomize: true }));
+    const newGrid = generateLifeGrid({ randomize: true });
+
+    setLivingCellsCount(countLiveCells(newGrid));
+    setGrid(newGrid);
   };
 
   const handleLimitBorder = () => setBorderLimited((currentState) => !currentState);
@@ -165,10 +173,12 @@ function App() {
 
   useEffect(() => {
     const newGrid = updateLifeGrid(grid, isBorderLimited);
-    const shouldStop = isStopWhenBlank && countLiveCells(newGrid) === 0;
+    const livingCells = countLiveCells(newGrid);
+    const shouldStop = isStopWhenBlank && livingCells === 0;
 
     if (shouldStop) setIsAutoplay(false);
 
+    setLivingCellsCount(livingCells);
     setGrid(newGrid);
   }, [isAutoplay, generation]);
 
@@ -187,7 +197,7 @@ function App() {
                   key={`grid-cell-${j}`}
                   className={`gridCell ${cell.isAlive ? "alive" : "dead"}`}
                   onClick={() => {
-                    handleUpdateCurrentGrid(cell.line, cell.col);
+                    handleUpdateCurrentCell(cell.line, cell.col);
                   }}
                 >
                   {" "}
@@ -198,25 +208,44 @@ function App() {
         </div>
 
         <div className="controls">
-          <p className="generation">Generation: {String(generation).padStart(3, "0")}</p>
+          <div className="score">
+            <div className="score--line">
+              <p className="generation">Generations: {String(generation).padStart(3, "0")}</p>
+              <p className="living-cells">
+                Living cells: {String(livingCellsCount).padStart(3, "0")}
+              </p>
+            </div>
+          </div>
 
-          <button className="menu-item" onClick={handleAutoGenerate}>
+          <button
+            className="menu-item"
+            onClick={handleAutoGenerate}
+            disabled={livingCellsCount === 0}
+          >
             {isAutoplay ? (
               <>
-                <span>⏸︎</span> <span>Pause Generation</span>
+                <span>⏸︎</span> <span>Pause Auto-Generation</span>
               </>
             ) : (
               <>
-                <span>⏵︎</span> <span>Start Generation</span>
+                <span>⏵︎</span> <span>Start Auto-Generation</span>
               </>
             )}
           </button>
 
-          <button className="menu-item" onClick={handleNextGeneration} disabled={isAutoplay}>
+          <button
+            className="menu-item"
+            onClick={handleNextGeneration}
+            disabled={isAutoplay || livingCellsCount === 0}
+          >
             <span>⏯︎</span> <span>Next Generation</span>
           </button>
 
-          <button className="menu-item" onClick={handleReset} disabled={generation === 0}>
+          <button
+            className="menu-item"
+            onClick={handleReset}
+            disabled={generation === 0 && livingCellsCount === 0}
+          >
             <span>⏹︎</span> <span>Reset</span>
           </button>
 
