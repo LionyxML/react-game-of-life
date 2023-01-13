@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { lensPath, over, not, pathOr } from "ramda";
+import ReactECharts from "echarts-for-react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 
@@ -119,20 +120,60 @@ const countLiveCells = (lifeGrid: LifeGrid): number =>
     .flat()
     .filter(Boolean).length;
 
+const initialChartOptions = {
+  xAxis: {
+    type: "category",
+    axisLine: false,
+    show: false,
+  },
+  yAxis: {
+    type: "value",
+    show: false,
+  },
+  tooltip: {
+    axisPointer: {
+      type: "cross",
+      snap: true,
+    },
+  },
+  series: [
+    {
+      data: [0],
+      showSymbol: false,
+      type: "line",
+    },
+  ],
+};
+
 function App() {
   const [isBorderLimited, setBorderLimited] = useState(false);
   const [isStopWhenBlank, setIsStopWhenBlank] = useState(true);
   const [isAutoplay, setIsAutoplay] = useState(false);
   const [generation, setGeneration] = useState(0);
   const [grid, setGrid] = useState(generateLifeGrid({}));
-  const [livingCellsCount, setLivingCellsCount] = useState(0);
+  const [livingCellsCount, setLivingCellsCount] = useState([0]);
+  const [chartOptions, setChartOptions] = useState(initialChartOptions);
   const ticker = useRef(0);
+
+  const updateLivingCellsCount = (lives: number) => {
+    setLivingCellsCount((livingCellsList) => {
+      const livingCellsListClone = [...livingCellsList];
+      livingCellsListClone[generation] = lives;
+
+      setChartOptions({
+        ...chartOptions,
+        series: [{ ...chartOptions.series[0], data: livingCellsCount }],
+      });
+
+      return livingCellsListClone;
+    });
+  };
 
   const handleUpdateCurrentCell = (line: number, col: number) =>
     setGrid((currentGrid) => {
       const newGrid = [...over(lensPath([line, col, "isAlive"]), not, currentGrid)];
 
-      setLivingCellsCount(countLiveCells(newGrid));
+      updateLivingCellsCount(countLiveCells(newGrid));
 
       return newGrid;
     });
@@ -140,7 +181,7 @@ function App() {
   const handleNextGeneration = () => setGeneration((generation) => (generation += 1));
 
   const handleReset = () => {
-    setLivingCellsCount(0);
+    setLivingCellsCount([0]);
     setGeneration(0);
     setGrid(generateLifeGrid({}));
     setIsAutoplay(false);
@@ -149,7 +190,7 @@ function App() {
   const handleRandom = () => {
     const newGrid = generateLifeGrid({ randomize: true });
 
-    setLivingCellsCount(countLiveCells(newGrid));
+    updateLivingCellsCount(countLiveCells(newGrid));
     setGrid(newGrid);
   };
 
@@ -178,7 +219,7 @@ function App() {
 
     if (shouldStop) setIsAutoplay(false);
 
-    setLivingCellsCount(livingCells);
+    updateLivingCellsCount(livingCells);
     setGrid(newGrid);
   }, [isAutoplay, generation]);
 
@@ -187,24 +228,39 @@ function App() {
       <h1>
         The <img src={reactLogo} className="logo react" alt="React logo" /> Game of Life
       </h1>
-      <div className="line"></div>
+
       <div className="line">
-        <div className="grid">
-          {grid.map((line, i) => (
-            <div key={`grid-line-${i}`} className="gridLine">
-              {line.map((cell, j) => (
-                <div
-                  key={`grid-cell-${j}`}
-                  className={`gridCell ${cell.isAlive ? "alive" : "dead"}`}
-                  onClick={() => {
-                    handleUpdateCurrentCell(cell.line, cell.col);
-                  }}
-                >
-                  {" "}
+        <div>
+          {generation > 0 ? (
+            <div>
+              <ReactECharts
+                option={chartOptions}
+                style={{
+                  width: "100%",
+                  height: "100px",
+                }}
+              />
+            </div>
+          ) : null}
+          <div>
+            <div className="grid">
+              {grid.map((line, i) => (
+                <div key={`grid-line-${i}`} className="gridLine">
+                  {line.map((cell, j) => (
+                    <div
+                      key={`grid-cell-${j}`}
+                      className={`gridCell ${cell.isAlive ? "alive" : "dead"}`}
+                      onClick={() => {
+                        handleUpdateCurrentCell(cell.line, cell.col);
+                      }}
+                    >
+                      {" "}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
-          ))}
+          </div>
         </div>
 
         <div className="controls">
@@ -212,7 +268,7 @@ function App() {
             <div className="score--line">
               <p className="generation">Generations: {String(generation).padStart(3, "0")}</p>
               <p className="living-cells">
-                Living cells: {String(livingCellsCount).padStart(3, "0")}
+                Living cells: {String(livingCellsCount.at(-1)).padStart(3, "0")}
               </p>
             </div>
           </div>
@@ -220,7 +276,7 @@ function App() {
           <button
             className="menu-item"
             onClick={handleAutoGenerate}
-            disabled={livingCellsCount === 0}
+            disabled={livingCellsCount.at(0) === 0}
           >
             {isAutoplay ? (
               <>
@@ -236,7 +292,7 @@ function App() {
           <button
             className="menu-item"
             onClick={handleNextGeneration}
-            disabled={isAutoplay || livingCellsCount === 0}
+            disabled={isAutoplay || livingCellsCount.at(0) === 0}
           >
             <span>⏯︎</span> <span>Next Generation</span>
           </button>
@@ -244,7 +300,7 @@ function App() {
           <button
             className="menu-item"
             onClick={handleReset}
-            disabled={generation === 0 && livingCellsCount === 0}
+            disabled={generation === 0 && livingCellsCount.at(0) === 0}
           >
             <span>⏹︎</span> <span>Reset</span>
           </button>
