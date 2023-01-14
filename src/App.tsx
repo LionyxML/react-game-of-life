@@ -123,7 +123,6 @@ const countLiveCells = (lifeGrid: LifeGrid): number =>
 const initialChartOptions = {
   xAxis: {
     type: "category",
-    axisLine: false,
     show: false,
   },
   yAxis: {
@@ -232,7 +231,7 @@ function App() {
       <div className="line">
         <div>
           {generation > 0 ? (
-            <div>
+            <div className="message-or-graph">
               <ReactECharts
                 option={chartOptions}
                 style={{
@@ -241,7 +240,26 @@ function App() {
                 }}
               />
             </div>
-          ) : null}
+          ) : (
+            <div className="message-or-graph">
+              <span>
+                Hello there! Welcome to the React game of Life!
+                <br />
+                If you don&apos;t know how to play it, you may visit this great{" "}
+                <a
+                  href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  article
+                </a>{" "}
+                first.
+                <br />
+                For a quick experience, just hit &quot;Randomize&quot; and then &quot;Start
+                Auto-Generation&quot;.
+              </span>
+            </div>
+          )}
           <div>
             <div className="grid">
               {grid.map((line, i) => (
@@ -324,7 +342,11 @@ function App() {
           </div>
 
           <p className="footer">
-            by RMJ (<a href="https://github.com/LionyxML">github</a>)
+            by RMJ (
+            <a href="https://github.com/LionyxML" target="_blank" rel="noreferrer">
+              github
+            </a>
+            )
           </p>
         </div>
       </div>

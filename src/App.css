@@ -97,6 +97,7 @@
   font-size: large;
   font-weight: 500;
   margin: 0;
+  padding-top: 28px;
   font-family: monospace;
   text-align: right;
 }
@@ -106,7 +107,7 @@
   font-size: large;
   font-weight: 500;
   margin: 0;
-  padding-bottom: 20px;
+  padding-bottom: 30px;
   font-family: monospace;
   text-align: right;
 }
@@ -115,12 +116,14 @@
   margin-top: 25px;
   color: inherit;
   display: flex;
+  align-items: center;
   gap: 5px;
 }
 
 .auto-stop {
   color: inherit;
   display: flex;
+  align-items: center;
   gap: 5px;
 }
 
@@ -135,4 +138,16 @@
 .menu-item {
   display: flex;
   justify-content: space-between;
+}
+
+.message-or-graph {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: auto;
+  border: 1px solid #ddd;
+  border-radius: 0.3rem;
+  margin-bottom: 1rem;
 }
