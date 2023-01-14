@@ -124,6 +124,7 @@ const initialChartOptions = {
   xAxis: {
     type: "category",
     show: false,
+    color: "red",
   },
   yAxis: {
     type: "value",
@@ -140,6 +141,7 @@ const initialChartOptions = {
       data: [0],
       showSymbol: false,
       type: "line",
+      lineStyle: { color: "rgba(0, 200, 200, 1)" },
     },
   ],
 };
