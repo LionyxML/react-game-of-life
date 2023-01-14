@@ -231,7 +231,7 @@ function App() {
       </h1>
 
       <div className="line">
-        <div>
+        <div className="line-inner-wrapper">
           {generation > 0 ? (
             <div className="message-or-graph">
               <ReactECharts

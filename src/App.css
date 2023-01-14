@@ -139,6 +139,7 @@
 .menu-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .message-or-graph {
@@ -151,4 +152,33 @@
   border: 1px solid #ddd;
   border-radius: 0.3rem;
   margin-bottom: 1rem;
+}
+
+.line-inner-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1000px) {
+  .line {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 750px) {
+  .grid {
+    transform: rotate(-90deg);
+    margin-top: 60%;
+    margin-bottom: 50%;
+  }
+
+  .message-or-graph {
+    height: 150px;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    font-size: 12px;
+  }
+
+  .line-inner-wrapper {
+    width: 290px;
+  }
 }
