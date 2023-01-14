@@ -4,4 +4,6 @@
 
 A React app based on Conway's Game of Life
 
-You can see it working here: [![React-Game-Of-Life](https://lionyxml.github.io/react-game-of-life)]
+You can see it working here: [React-Game-Of-Life](https://lionyxml.github.io/react-game-of-life)
+
+![demo-picture](./doc/demo.png)
