@@ -293,6 +293,10 @@ function App() {
             </div>
           </div>
 
+          <button className="menu-item" onClick={handleRandom} disabled={generation !== 0}>
+            <span>⇆</span> <span>Randomize</span>
+          </button>
+
           <button
             className="menu-item"
             onClick={handleAutoGenerate}
@@ -323,10 +327,6 @@ function App() {
             disabled={generation === 0 && livingCellsCount.at(0) === 0}
           >
             <span>⏹︎</span> <span>Reset</span>
-          </button>
-
-          <button className="menu-item" onClick={handleRandom} disabled={generation !== 0}>
-            <span>⇆</span> <span>Randomize</span>
           </button>
 
           <div className="menu-item">
